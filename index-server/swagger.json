@@ -1,0 +1,1023 @@
+{
+  "swagger": "2.0",
+
+  "info": {
+    "version": "1.0.0",
+    "title": "Dev-connector API",
+    "description": "API description format for different endpoints"
+  },
+
+  "schemes": ["http", "https"],
+  "host": "localhost:80",
+  "paths": {
+    "/api/users/current": {
+      "get": {
+        "summary": "Get the person that is logged in",
+        "tags": ["Users"],
+        "description": "The person who is logged in as well as the person who got throught the jwt authentication",
+        "responses": {
+          "200": {
+            "description": "The current user that is logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+
+                "email": {
+                  "type": "string"
+                },
+
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/register": {
+      "post":
+      {
+        "summary": "Register User",
+        "tags": ["Users"],
+        "description": "Route for registering an user to the database",
+        "parameters": [
+          {
+            "name": "RegUser",
+            "in": "body",
+            "description": "Register credentials",
+            "schema": {
+              "type": "object",
+              "required": ["name", "email", "password", "password2"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "password2": {
+                  "type": "string"
+                }
+              }
+            }
+          }],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "password2": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The user has been successfully registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "format": "object"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "__v": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "summary": "Login User",
+        "tags": ["Users"],
+        "description": "Route to logging an user",
+        "parameters": [{
+          "name": "LogUser",
+          "in": "body",
+          "description": "Login credentials",
+          "schema": {
+            "required": ["email", "password"],
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "The user has successfully logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The user can't be found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/posts": {
+      "get": {
+        "summary": "Get posts",
+        "tags": ["Posts"],
+        "description": "Get all posts in descending",
+        "responses": {
+          "200": {
+            "description": "All posts are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Post"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Post",
+        "tags": ["Posts"],
+        "description": "Create private post by a certain user",
+        "parameters": [{
+          "name": "PostInfo",
+          "in": "body",
+          "description": "Initial post parameters info",
+          "schema": {
+            "type": "object",
+            "required": ["text", "name"],
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "The post who is created",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          }
+        }
+      }
+    },
+    "/api/posts/{postID}": {
+      "get": {
+        "summary": "Get Post",
+        "tags": ["Posts"],
+        "description": "Route for getting post by post ID",
+        "parameters": [{
+          "$ref": "#/parameters/postID"
+        }],
+        "responses": {
+          "200": {
+            "description": "The post was found in the posts collection",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "404": {
+            "description": "The post with that ID cannot be found",
+            "schema": {
+              "type": "object",
+              "required": ["error"],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Post",
+        "tags": ["Posts"],
+        "description": "Deletion of a post by it's id",
+        "parameters": [{
+          "$ref": "#/parameters/postID"
+        }],
+        "responses": {
+          "200": {
+            "description": "The post was successfully deleted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized to delete someone elses post",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "notauthorized": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/posts/like/{postID}": {
+      "post": {
+        "summary": "Like Post",
+        "tags": ["Posts"],
+        "description": "Like post by post id",
+        "parameters": [{
+          "$ref": "#/parameters/postID"
+        }],
+        "responses": {
+          "200": {
+            "description": "User likes post and gets added to the array of likes by his ID",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "User already liked this post",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "alreadyliked": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No post found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "postnotfound": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/posts/unlike/{postID}": {
+      "post": {
+        "summary": "Unlike post",
+        "tags": ["Posts"],
+        "description": "Unlike post with post ID",
+        "parameters": [{
+          "$ref": "#/parameters/postID"
+        }],
+        "responses": {
+          "500": {
+            "description": "Post was removed",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "You have not liked the post yet",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "notliked": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The post wasn't found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "postnotfound": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles": {
+      "post": {
+        "summary": "Create or Edit profile",
+        "tags": ["Profile"],
+        "description": "Create or edit profile",
+        "parameters": [{
+          "$ref": "#/parameters/Profile"
+        }],
+        "responses": {
+          "200": {
+            "description": "The profile has been created or updated",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "400": {
+            "description": "The request isn't according to the form principles",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "handle": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "skills": {
+                  "type": "string"
+                },
+                "website": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/current": {
+      "get": {
+        "summary": "Get Profile",
+        "tags": ["Profile"],
+        "description": "Get Current Users Profile",
+        "responses": {
+          "200": {
+            "description": "The profile has been returned",
+            "schema": {
+              "type": "object",
+              "allOf": [{
+                "$ref": "#/definitions/Profile"
+              },{
+                "description": "User field populated",
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "$ref": "#/definitions/UserPopulate"
+                  }
+                }
+              }]
+            }
+          },
+          "404": {
+            "description": "User Not Found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "noprofile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/all": {
+      "get": {
+        "summary": "Get all profiles",
+        "tags": ["Profile"],
+        "description": "Get all profiles by handle",
+        "responses": {
+          "200": {
+            "description": "All profiles are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "allOf": [{
+                  "$ref": "#/definitions/Profile"
+                },{
+                  "description": "User field populated",
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/definitions/UserPopulate"
+                    }
+                  }
+                }]
+              }
+            }
+          },
+          "404": {
+            "description": "No profiles were returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "noprofile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/handle/{handle}": {
+      "get": {
+        "summary": "Get profile",
+        "tags": ["Profile"],
+        "description": "Get profile by handle",
+        "parameters": [{
+          "name": "handle",
+          "in": "path",
+          "required": true,
+          "description": "Handle of the profile",
+          "type": "string"
+        }],
+        "responses": {
+          "200": {
+            "description": "The user is being returned",
+            "schema": {
+              "allOf": [{
+                "$ref": "#/definitions/Profile"
+              },{
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "$ref": "#/definitions/UserPopulate"
+                  }
+                }
+              }]
+            }
+          },
+          "404": {
+            "description": "There is no profile for this handle",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "noprofile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/user/{userID}": {
+      "get": {
+        "summary": "Get Profile",
+        "tags": ["Profile"],
+        "description": "Get profile by user ID",
+        "parameters": [{
+          "name": "userID",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "user ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "The Profile has been returned",
+            "schema": {
+              "allOf": [{
+                "$ref": "#/definitions/Profile"
+              },{
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "$ref": "#/definitions/UserPopulate"
+                  }
+                }
+              }]
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/experience": {
+      "post": {
+        "summary": "Add experience",
+        "tags": ["Profile"],
+        "description": "Add experience to existing profile",
+        "parameters": [{
+          "$ref": "#/parameters/ProfileExperience"
+        }],
+        "responses": {
+          "200": {
+            "description": "The profile experience has been added",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "400": {
+            "description": "Invalid experience form params",
+            "schema": {
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "company": {
+                  "type": "string"
+                },
+                "from": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/education": {
+      "post": {
+        "summary": "Add Education",
+        "tags": ["Profile"],
+        "description": "Add education to user profile",
+        "parameters": [{
+          "$ref": "#/parameters/ProfileEducation"
+        }],
+        "responses": {
+          "200": {
+            "description": "Education has been added to profile",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "400": {
+            "description": "Invalid education form params",
+            "schema": {
+              "properties": {
+                "school": {
+                  "type": "string"
+                },
+                "degree": {
+                  "type": "string"
+                },
+                "fieldofstudy": {
+                  "type": "string"
+                },
+                "from": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "description": "JSON WEB TOKEN",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [{
+    "JWT": []
+  }],
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": ["_id", "name", "email", "password", "__v"],
+      "properties": {
+        "_id": {
+          "type": "string",
+          "format": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        }
+      }
+    },
+    "Post": {
+      "type": "object",
+      "required": ["user", "_id", "text", "name", "date"],
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "user": {
+                "type": "string",
+                "format": "object"
+              },
+              "_id": {
+                "type": "string",
+                "format": "object"
+              }
+            }
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+
+      }
+    },
+    "Comment": {
+      "required": ["user", "text"],
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "format": "object"
+        },
+        "text": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "required": ["_id","user", "handle", "status", "skills"],
+      "properties": {
+        "_id": {
+          "type": "string",
+          "format": "object"
+        },
+        "user": {
+          "type": "string",
+          "format": "object"
+        },
+        "handle": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "company": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bio": {
+          "type": "string"
+        },
+        "githubusername": {
+          "type": "string"
+        },
+        "experience": {
+          "$ref": "#/definitions/ProfileExperience"
+        },
+        "education": {
+          "$ref": "#/definitions/ProfileEducation"
+        },
+        "social": {
+          "type": "object",
+          "properties": {
+            "youtube": {
+              "type": "string"
+            },
+            "twitter": {
+              "type": "string"
+            },
+            "facebook": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "instagram": {
+              "type": "string"
+            }
+          }
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "__v": {
+          "type": "string"
+        }
+      }
+    },
+    "ProfileExperience": {
+      "type": "array",
+      "items": {
+        "required": ["title", "company", "from", "current"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ProfileEducation": {
+      "type": "array",
+      "items": {
+        "required": ["school", "degree", "fieldofstudy", "from", "current"],
+        "properties": {
+          "school": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "fieldofstudy": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "UserPopulate": {
+      "type": "object",
+      "required": ["_id"],
+      "properties": {
+        "_id": {
+          "type": "string",
+          "format": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "postID": {
+      "name": "postID",
+      "in": "path",
+      "required": true,
+      "description": "The id of the post we are looking for",
+      "type": "string"
+    },
+    "Profile": {
+      "description": "Create Profile Data",
+      "name": "ProfileBody",
+      "in": "body",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "required": ["handle", "status", "skills"],
+        "properties": {
+          "handle": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "company": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "githubusername": {
+            "type": "string"
+          },
+          "youtube": {
+            "type": "string"
+          },
+          "twitter": {
+            "type": "string"
+          },
+          "facebook": {
+            "type": "string"
+          },
+          "linkedin": {
+            "type": "string"
+          },
+          "instagram": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "ProfileExperience": {
+      "description": "Experience params",
+      "name": "experience",
+      "in": "body",
+      "schema": {
+        "type": "object",
+        "required": ["title", "company", "from"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ProfileEducation": {
+      "description": "Education params",
+      "name": "education",
+      "in": "body",
+      "schema": {
+        "type": "object",
+        "required": ["school", "degree", "fieldofstudy", "from"],
+        "properties": {
+          "school": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "fieldofstudy": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

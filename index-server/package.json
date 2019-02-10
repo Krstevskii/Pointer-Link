@@ -1,0 +1,20 @@
+{
+  "name": "index-server",
+  "version": "1.0.0",
+  "description": "graduation app main server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "request": "^2.88.0",
+    "swagger-ui-express": "^4.0.2"
+  }
+}

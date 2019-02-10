@@ -1,0 +1,55 @@
+version: '2'
+
+services:
+  main-app:
+    image: mern-index
+    build:
+      context: ./index-server
+      dockerfile: Dockerfile
+    ports:
+      - 80:3000
+    volumes:
+      - ./index-server:/usr/src/app
+
+  users-service:
+    image: mern-users
+    build:
+      context: ./users-microservice
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb-service
+    volumes:
+      - ./users-microservice:/usr/src/app
+
+  posts-service:
+    image: mern-posts
+    build:
+      context: ./posts-microservice
+      dockerfile: Dockerfile
+    volumes:
+      - ./posts-microservice:/usr/src/app
+    depends_on:
+      - mongodb-service
+
+  profile-service:
+    image: mern-profiles
+    build:
+      context: ./profiles-microservice
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb-service
+    volumes:
+      - ./profiles-microservice:/usr/src/app
+
+  mongodb-service:
+    image: mongo:3.4-jessie
+    volumes:
+      - mongodb:/data/db
+      - mongodb-config:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: krstevski14
+
+volumes:
+  mongodb:
+  mongodb-config:
